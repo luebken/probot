@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Context.html">Context</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#config">config</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#issue">issue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#repo">repo</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Robot.html">Robot</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Robot.html#on">on</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Context.html">Context</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#config">config</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#issue">issue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#repo">repo</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Robot.html">Robot</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Robot.html#on">on</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Robot.html#route">route</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li>
 </nav>
 
 <div id="main">
@@ -88,14 +88,32 @@
 <p>Once you have an app created, install <code>probot</code>:</p>
 <pre class="prettyprint source"><code>$ npm install -g probot</code></pre><p>and run your bot from your plugin's directory, replacing <code>APP_ID</code> and <code>private-key.pem</code> below with your App's ID and the path to the private key of your app.</p>
 <pre class="prettyprint source"><code>$ probot run -a APP_ID -P private-key.pem ./index.js
-Listening on http://localhost:3000</code></pre><h2>Simulating webhooks</h2><p>As you are developing your plugin, you will likely want to test it by repeatedly trigging the same webhook. You can simulate a webhook being delivered by saving the payload to a file, and then calling <code>probot simulate</code> from the command line.</p>
+Listening on http://localhost:3000</code></pre><h2>HTTP Routes</h2><p>Calling <code>robot.route('/my-plugin')</code> will return an <a href="http://expressjs.com/">express</a> router that you can use to expose HTTP endpoints from your plugin.</p>
+<pre class="prettyprint source lang-js"><code>module.exports = robot => {
+  // Get an express router to expose new HTTP endpoints
+  const app = robot.route('/my-plugin');
+
+  // Use any middleware
+  app.use(require('express').static(__dirname + '/public'));
+
+  // Add a new route
+  app.get('/hello-world', (req, res) => {
+    res.end('Hello World');
+  });
+};</code></pre><p>Visit https://localhost:3000/my-plugin/hello-world to access the endpoint.</p>
+<p>It is strongly encouraged to use the name of your package as the prefix so none of your routes or middleware conflict with other plugins. For example, if <a href="https://github.com/probot/owners"><code>probot/owners</code></a> exposed an endpoint, the plugin would call <code>robot.route('/owners')</code> to prefix all endpoints with <code>/owners</code>.</p>
+<p>See the <a href="http://expressjs.com/en/guide/routing.html">express documentation</a> for more information.</p>
+<h2>Simulating webhooks</h2><p>As you are developing your plugin, you will likely want to test it by repeatedly trigging the same webhook. You can simulate a webhook being delivered by saving the payload to a file, and then calling <code>probot simulate</code> from the command line.</p>
 <p>To save a copy of the payload, go to the  <a href="https://github.com/settings/apps">settings</a> page for your App, and go to the <strong>Advanced</strong> tab. Click on one of the <strong>Recent Deliveries</strong> to expand it and see the details of the webhook event. Copy the JSON from the the <strong>Payload</strong> and save it to a new file. (<code>test/fixtures/issues.labeled.json</code> in this example).</p>
 <p><img src="https://user-images.githubusercontent.com/173/28491924-e03e91f2-6ebe-11e7-9570-6d48da68c6ca.png" alt=""></p>
 <p>Next, simulate this event being delivered by running:</p>
 <pre class="prettyprint source"><code>$ node_modules/.bin/probot simulate issues test/fixtures/issues.labeled.json ./index.js</code></pre><h2>Publishing your bot</h2><p>Plugins can be published in npm modules, which can either be deployed as stand-alone bots, or combined with other plugins.</p>
-<p>Use the <a href="https://github.com/probot/plugin-template">plugin-template</a> repository to get started building your plugin as a node module.</p>
-<pre class="prettyprint source"><code>$ curl -L https://github.com/probot/plugin-template/archive/master.tar.gz | tar xvz
-$ mv plugin-template-master probot-myplugin && cd probot-myplugin</code></pre><h2>Next</h2><ul>
+<p>Use <a href="https://github.com/probot/create-probot-plugin">create-probot-plugin</a> to get started building your plugin as a node module.</p>
+<pre class="prettyprint source"><code>$ npm install -g create-probot-app
+
+$ create-probot-plugin my-plugin
+$ cd my-plugin
+$ npm install</code></pre><h2>Next</h2><ul>
 <li><a href="https://probot.github.io/probot/latest/">See the full Probot API</a></li>
 <li><a href="development.md">Tips for development</a></li>
 <li><a href="deployment.md">Deploy your plugin</a></li>
@@ -112,7 +130,7 @@ $ mv plugin-template-master probot-myplugin && cd probot-myplugin</code></pre><h
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Jul 27 2017 11:29:34 GMT-0500 (CDT) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Aug 04 2017 11:32:12 GMT-0500 (CDT) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

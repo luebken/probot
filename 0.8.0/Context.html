@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Context.html">Context</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#config">config</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#issue">issue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#repo">repo</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Robot.html">Robot</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Robot.html#on">on</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Context.html">Context</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#config">config</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#issue">issue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#repo">repo</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Robot.html">Robot</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Robot.html#on">on</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Robot.html#route">route</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li>
 </nav>
 
 <div id="main">
@@ -315,7 +315,7 @@ passed to GitHub API calls.</p></div>
 
     
 
-    <h4 class="name" id="config"><span class="type-signature"></span>config<span class="signature">(fileName)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
+    <h4 class="name" id="config"><span class="type-signature"></span>config<span class="signature">(fileName, defaultConfig<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
 
     
 
@@ -359,7 +359,7 @@ directory of the repository.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="context.js.html">context.js</a>, <a href="context.js.html#line81">line 81</a>
+        <a href="context.js.html">context.js</a>, <a href="context.js.html#line88">line 88</a>
     </li></ul></dd>
     
 
@@ -391,6 +391,8 @@ directory of the repository.</p>
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -416,11 +418,55 @@ directory of the repository.</p>
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
             <td class="description last">
                 <p>Name of the YAML file in the <code>.github</code> directory</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>defaultConfig</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <p>An object of default config options</p>
                 
             </td>
         </tr>
@@ -461,7 +507,9 @@ directory of the repository.</p>
 
 
 <div class="param-desc">
-    <p>Configuration object read from the file</p>
+    <ul>
+<li>Configuration object read from the file</li>
+</ul>
 </div>
 
     
@@ -470,14 +518,22 @@ directory of the repository.</p>
 
 
 <div class="section-examples">
-<h5>Example</h5>
+<h5>Examples</h5>
 
+        <p class="code-caption">Contents of <code>.github/myplugin.yml</code>.</p>
+    
+    <pre class="prettyprint"><code>close: true
+comment: Check the specs on the rotary girder.</code></pre>
+
+        <p class="code-caption">Plugin that reads from <code>.github/myplugin.yml</code>.</p>
+    
     <pre class="prettyprint"><code>// Load config from .github/myplugin.yml in the repository
-    const config = await context.config('myplugin.yml');
+const config = await context.config('myplugin.yml');
 
-    if(config.close) {
-      context.github.issues.edit(context.issue({state: 'closed'}));
-    }</code></pre>
+if(config.close) {
+  context.github.issues.comment(context.issue({body: config.comment}));
+  context.github.issues.edit(context.issue({state: 'closed'}));
+}</code></pre>
 
 </div>
 
@@ -813,7 +869,7 @@ repository.</p>
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Jul 27 2017 11:29:34 GMT-0500 (CDT) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Aug 04 2017 11:32:12 GMT-0500 (CDT) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
